@@ -7,6 +7,8 @@
 package org.dataaccessioner;
 
 import java.io.File;
+import java.io.FilenameFilter;
+import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
@@ -20,6 +22,24 @@ public class SwingView extends javax.swing.JFrame {
      * Creates new form SwingView
      */
     public SwingView() {
+        
+        //Load any xslt found
+        for(File transform: new File("xslt").listFiles(new FilenameFilter() {
+            private final String[] okFileExtensions = new String[]{"xsl", "xslt"};
+            
+            @Override
+            public boolean accept(File dir, String name) {
+                for (String extension : okFileExtensions) {
+                    if (name.toLowerCase().endsWith(extension)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        })){
+            transLstMdl.addElement(transform.getAbsolutePath());
+        }
+        
         initComponents();
     }
 
@@ -61,16 +81,38 @@ public class SwingView extends javax.swing.JFrame {
             }
         });
 
+        srcLst.setModel(srcLstMdl);
         srcSP.setViewportView(srcLst);
 
         rmvSrcBtn.setText("Remove Source");
+        rmvSrcBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rmvSrcBtnActionPerformed(evt);
+            }
+        });
 
         outDirBtn.setText("Set Output Dir");
+        outDirBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                outDirBtnActionPerformed(evt);
+            }
+        });
 
         addTransBtn.setText("Add Transform");
+        addTransBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addTransBtnActionPerformed(evt);
+            }
+        });
 
         rmvTransBtn.setText("Remove Transform");
+        rmvTransBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rmvTransBtnActionPerformed(evt);
+            }
+        });
 
+        transLst.setModel(transLstMdl);
         transSP.setViewportView(transLst);
 
         runBtn.setText("Run Transforms");
@@ -107,16 +149,14 @@ public class SwingView extends javax.swing.JFrame {
                             .addComponent(rmvTransBtn, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(addTransBtn, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(cancelBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(clearStatusBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(clearStatusBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(rmvSrcBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(outDirTxt, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(transSP, javax.swing.GroupLayout.DEFAULT_SIZE, 374, Short.MAX_VALUE)
+                            .addComponent(transSP, javax.swing.GroupLayout.DEFAULT_SIZE, 521, Short.MAX_VALUE)
                             .addComponent(srcSP)
                             .addComponent(statusSP)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addComponent(rmvSrcBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(transSep, javax.swing.GroupLayout.Alignment.LEADING))
                 .addContainerGap())
         );
@@ -174,11 +214,58 @@ public class SwingView extends javax.swing.JFrame {
         addSrcSelector.setMultiSelectionEnabled(true);
         addSrcSelector.setFileSelectionMode(JFileChooser.FILES_ONLY);
         if (addSrcSelector.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-                File[] files = addSrcSelector.getSelectedFiles();
-                //Test that files are not directories
-                //Add them to source list
+            for (File file : addSrcSelector.getSelectedFiles()) {
+                if (file.isFile() && file.canRead()) {
+                    srcLstMdl.addElement(file);
+                }
             }
+        }
     }//GEN-LAST:event_addSrcBtnActionPerformed
+
+    private void addTransBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addTransBtnActionPerformed
+        JFileChooser addSrcSelector = new JFileChooser();
+        addSrcSelector.setMultiSelectionEnabled(true);
+        addSrcSelector.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        if (addSrcSelector.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            for (File file : addSrcSelector.getSelectedFiles()) {
+                if (file.isFile() && file.canRead()) {
+                    transLstMdl.addElement(file);
+                }
+            }
+        }
+    }//GEN-LAST:event_addTransBtnActionPerformed
+
+    private void rmvSrcBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rmvSrcBtnActionPerformed
+        for(Object selected: srcLst.getSelectedValues()){
+            srcLstMdl.removeElement(selected);
+        }
+    }//GEN-LAST:event_rmvSrcBtnActionPerformed
+
+    private void rmvTransBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rmvTransBtnActionPerformed
+        for(Object selected: transLst.getSelectedValues()){
+            transLstMdl.removeElement(selected);
+        }
+    }//GEN-LAST:event_rmvTransBtnActionPerformed
+
+    private void outDirBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_outDirBtnActionPerformed
+        JFileChooser outDirSelector = new JFileChooser();
+        outDirSelector.setMultiSelectionEnabled(false);
+        outDirSelector.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        if(outDirSelector.showOpenDialog(this)==JFileChooser.APPROVE_OPTION){
+            File outDir = outDirSelector.getSelectedFile();
+            if(outDir.isDirectory() && outDir.canWrite()){
+                outDirTxt.setText(outDir.getAbsolutePath());
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "The selected output directory ("+outDir.getPath()
+                                +")\n is invalid or you cannot write to it.\n"
+                                +"Select a valid directory.",
+                        "Invalid Output Directory",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+    }//GEN-LAST:event_outDirBtnActionPerformed
 
     /**
      * @param args the command line arguments
@@ -236,4 +323,6 @@ public class SwingView extends javax.swing.JFrame {
     private javax.swing.JScrollPane transSP;
     private javax.swing.JSeparator transSep;
     // End of variables declaration//GEN-END:variables
+    private DefaultListModel transLstMdl = new DefaultListModel();
+    private DefaultListModel srcLstMdl = new DefaultListModel();
 }
