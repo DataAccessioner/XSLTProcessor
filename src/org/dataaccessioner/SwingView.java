@@ -6,11 +6,16 @@
 
 package org.dataaccessioner;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
 
 /**
  *
@@ -116,6 +121,11 @@ public class SwingView extends javax.swing.JFrame {
         transSP.setViewportView(transLst);
 
         runBtn.setText("Run Transforms");
+        runBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                runBtnActionPerformed(evt);
+            }
+        });
 
         statusTxt.setEditable(false);
         statusTxt.setColumns(20);
@@ -267,6 +277,11 @@ public class SwingView extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_outDirBtnActionPerformed
 
+    private void runBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runBtnActionPerformed
+        TransformTask transform = new TransformTask();
+        transform.execute();
+    }//GEN-LAST:event_runBtnActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -325,4 +340,49 @@ public class SwingView extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
     private DefaultListModel transLstMdl = new DefaultListModel();
     private DefaultListModel srcLstMdl = new DefaultListModel();
+
+    class TransformTask extends SwingWorker<String, Object> {
+
+        @Override
+        protected String doInBackground() throws Exception {
+            statusTxt.append("Preparing to run transformations...\n");
+            statusTxt.append("Checking destination... ");
+            File out = new File(outDirTxt.getText());
+            statusTxt.append(out.getPath());
+            if(out.isDirectory() && out.canWrite()){
+                statusTxt.append(" is good.\n");
+            } else {
+                statusTxt.append(" is either not a directory or not writable.\n"
+                        + "Canceling...\n");
+                return "Canceled";
+            }
+            statusTxt.append("Checking sources.\n");
+            ArrayList<String> sources = new ArrayList<String>();
+            for (Object obj : srcLstMdl.toArray()) {
+                statusTxt.append(obj.toString());
+                if (new File(obj.toString()).canRead()) {
+                    sources.add(obj.toString());
+                    statusTxt.append(" ... is added.\n");
+                } else {
+                    statusTxt.append(" ... cannot be read and was not added.\n");
+                }
+            }
+
+            statusTxt.append("Checking transforms.\n");
+            ArrayList<String> transforms = new ArrayList<String>();
+            for (Object obj : transLstMdl.toArray()) {
+                statusTxt.append(obj.toString());
+                if (new File(obj.toString()).canRead()) {
+                    transforms.add(obj.toString());
+                    statusTxt.append(" ... is added.\n");
+                } else {
+                    statusTxt.append(" ... cannot be read and was not added.\n");
+                }
+            }
+            statusTxt.append("Starting transformations... \n");
+            new XSLTProcessor().runTransforms(sources, transforms, outDirTxt.getText());
+            statusTxt.append("Transformations complete.\n");
+            return "Done.";
+        }
+    }
 }
