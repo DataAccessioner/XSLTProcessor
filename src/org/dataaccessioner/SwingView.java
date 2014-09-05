@@ -359,9 +359,10 @@ public class SwingView extends javax.swing.JFrame {
             statusTxt.append("Checking sources.\n");
             ArrayList<String> sources = new ArrayList<String>();
             for (Object obj : srcLstMdl.toArray()) {
-                statusTxt.append(obj.toString());
-                if (new File(obj.toString()).canRead()) {
-                    sources.add(obj.toString());
+                File source = new File(obj.toString());
+                statusTxt.append(source.getName());
+                if (source.canRead()) {
+                    sources.add(source.getAbsolutePath());
                     statusTxt.append(" ... is added.\n");
                 } else {
                     statusTxt.append(" ... cannot be read and was not added.\n");
@@ -371,9 +372,10 @@ public class SwingView extends javax.swing.JFrame {
             statusTxt.append("Checking transforms.\n");
             ArrayList<String> transforms = new ArrayList<String>();
             for (Object obj : transLstMdl.toArray()) {
-                statusTxt.append(obj.toString());
-                if (new File(obj.toString()).canRead()) {
-                    transforms.add(obj.toString());
+                File transform = new File(obj.toString());
+                statusTxt.append(transform.getName());
+                if (transform.canRead()) {
+                    transforms.add(transform.getAbsolutePath());
                     statusTxt.append(" ... is added.\n");
                 } else {
                     statusTxt.append(" ... cannot be read and was not added.\n");
