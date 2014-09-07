@@ -25,8 +25,6 @@ metadata manager)  and 1.0.
 # TODO
 
 + Implement the cancel button
-+ Add status messages to runTransforms
-+ Implement the progress bar
 + Update the files csv report for more intelligent format handling.
 + Create additional reports
     + simple HTML representation (perhaps with collapsing details)
