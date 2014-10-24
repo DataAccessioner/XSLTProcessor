@@ -6,18 +6,17 @@
 
 package org.dataaccessioner.xsltprocessor;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.ResourceBundle;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
-import javax.swing.Timer;
 
 /**
  *
@@ -25,11 +24,12 @@ import javax.swing.Timer;
  */
 public class SwingView extends javax.swing.JFrame {
 
+    ResourceBundle messages;
     /**
      * Creates new form SwingView
      */
     public SwingView() {
-        
+        messages = ResourceBundle.getBundle("org.dataaccessioner.xsltprocessor.resources.MessagesBundle");
         //Load any xslt found
         for(File transform: new File("xslt").listFiles(new FilenameFilter() {
             private final String[] okFileExtensions = new String[]{"xsl", "xslt"};
@@ -81,7 +81,8 @@ public class SwingView extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        addSrcBtn.setText("Add Source");
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/dataaccessioner/xsltprocessor/resources/MessagesBundle"); // NOI18N
+        addSrcBtn.setText(bundle.getString("add_source.btn")); // NOI18N
         addSrcBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addSrcBtnActionPerformed(evt);
@@ -91,28 +92,28 @@ public class SwingView extends javax.swing.JFrame {
         srcLst.setModel(srcLstMdl);
         srcSP.setViewportView(srcLst);
 
-        rmvSrcBtn.setText("Remove Source");
+        rmvSrcBtn.setText(bundle.getString("rmv_source.btn")); // NOI18N
         rmvSrcBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 rmvSrcBtnActionPerformed(evt);
             }
         });
 
-        outDirBtn.setText("Set Output Dir");
+        outDirBtn.setText(bundle.getString("set_out.btn")); // NOI18N
         outDirBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 outDirBtnActionPerformed(evt);
             }
         });
 
-        addTransBtn.setText("Add Transform");
+        addTransBtn.setText(bundle.getString("add_trans.btn")); // NOI18N
         addTransBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addTransBtnActionPerformed(evt);
             }
         });
 
-        rmvTransBtn.setText("Remove Transform");
+        rmvTransBtn.setText(bundle.getString("rmv_trans.btn")); // NOI18N
         rmvTransBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 rmvTransBtnActionPerformed(evt);
@@ -122,7 +123,7 @@ public class SwingView extends javax.swing.JFrame {
         transLst.setModel(transLstMdl);
         transSP.setViewportView(transLst);
 
-        runBtn.setText("Run Transforms");
+        runBtn.setText(bundle.getString("run_trans.btn")); // NOI18N
         runBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 runBtnActionPerformed(evt);
@@ -134,9 +135,9 @@ public class SwingView extends javax.swing.JFrame {
         statusTxt.setRows(5);
         statusSP.setViewportView(statusTxt);
 
-        cancelBtn.setText("Cancel");
+        cancelBtn.setText(bundle.getString("cancel.btn")); // NOI18N
 
-        clearStatusBtn.setText("Clear Results");
+        clearStatusBtn.setText(bundle.getString("clear.btn")); // NOI18N
         clearStatusBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 clearStatusBtnActionPerformed(evt);
@@ -268,13 +269,11 @@ public class SwingView extends javax.swing.JFrame {
             if(outDir.isDirectory() && outDir.canWrite()){
                 outDirTxt.setText(outDir.getAbsolutePath());
             } else {
-                JOptionPane.showMessageDialog(this,
-                        "The selected output directory ("+outDir.getPath()
-                                +")\n is invalid or you cannot write to it.\n"
-                                +"Select a valid directory.",
-                        "Invalid Output Directory",
+                String message = MessageFormat.format(messages.getString("invalid_out.error.body0"), outDir.getPath())
+                        + messages.getString("invalid_out.error.body1");
+                JOptionPane.showMessageDialog(this,message,
+                        messages.getString("invalid_out.error.title"),
                         JOptionPane.ERROR_MESSAGE);
-                return;
             }
         }
     }//GEN-LAST:event_outDirBtnActionPerformed
@@ -374,7 +373,8 @@ public class SwingView extends javax.swing.JFrame {
             }
             processor.runTransforms(sources, transforms, outDirTxt.getText());
             runProgress.setValue(0);
-            return "Done.";
+            
+            return messages.getString("done");
         }
     }
 }

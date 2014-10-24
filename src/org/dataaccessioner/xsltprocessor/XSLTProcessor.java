@@ -10,6 +10,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,12 @@ import org.jdom.transform.JDOMSource;
  * @author Seth Shaw
  */
 public class XSLTProcessor {
+
+    java.util.ResourceBundle bundle;
+    
+    public XSLTProcessor() {
+        bundle = java.util.ResourceBundle.getBundle("org/dataaccessioner/xsltprocessor/resources/MessagesBundle"); // NOI18N
+    }
 
     /**
      * @param args the command line arguments
@@ -72,12 +79,15 @@ public class XSLTProcessor {
     public void runTransforms(List<String> sourcePaths, List<String> transformPaths, String destination){
         transformCount = sourcePaths.size()*transformPaths.size();
         transformsDone = 0;
-        setStatusMessage("Setting up output directory... ");
+        setStatusMessage(bundle.getString("set_out.msg"));
         File destinationDir = new File(destination);
         destinationDir.mkdirs();
         setStatusMessage(destinationDir.getAbsolutePath()+"\n");
         if(!destinationDir.canWrite()){
-            setStatusMessage(destinationDir.getAbsolutePath()+"... cannot be used.\nCancelled.\n");
+            setStatusMessage(MessageFormat.format(
+                    bundle.getString("invalid_out.error.body0"), destinationDir
+                            .getAbsolutePath())
+                    +"\n"+bundle.getString("canceled.msg")+"\n");
             return;
         }
 
@@ -86,44 +96,43 @@ public class XSLTProcessor {
         for (String transformPath : transformPaths) {
             try {
                 String transformName = new File(transformPath).getName().replaceAll("\\.xslt?", "");
-                setStatusMessage("Setting up " + transformName + " transformer... ");
+                setStatusMessage(MessageFormat.format(bundle.getString("set_trans.msg"), transformName));
                 transforms.put(transformName, factory.newTransformer(new javax.xml.transform.stream.StreamSource(transformPath)));
-                setStatusMessage("done.\n");
+                setStatusMessage(bundle.getString("done")+"\n");
             } catch (TransformerConfigurationException ex) {
+                String warning = MessageFormat.format(bundle.getString("set_trans.wrn"), transformPath);
                 Logger.getLogger(XSLTProcessor.class.getName())
-                        .log(Level.WARNING, "Could not add the XSLT "
-                                + transformPath, ex);
-                setStatusMessage("could not setup.\n");
+                        .log(Level.WARNING, warning, ex);
+                setStatusMessage(warning+"\n");
             }
         }
         for (String sourcePath : sourcePaths) {
             File source = new File(sourcePath);
             if(!source.canRead()){
-                setStatusMessage("Cannot read "+source.getName()+"! Skipped.");
+                setStatusMessage(MessageFormat.format(bundle.getString("set_src.wrn"), source.getName()));
                 continue;
             }
             for (String transformName : transforms.keySet()) {
                 File report = new File(destination, source.getName().replaceAll("\\.xml?", "") + "_" + transformName);                
-                setStatusMessage("Running " + report.getName() + " ... ");
+                setStatusMessage(MessageFormat.format(bundle.getString("run_src.msg"), report.getName()));
                 
                 try {
                     FileOutputStream out = new FileOutputStream(report, false);
                     Result result = new StreamResult(out);
                     transforms.get(transformName).transform(new JDOMSource(new SAXBuilder().build(source)), result);
                     out.close();
-                    setStatusMessage(" done.\n");
+                    setStatusMessage(bundle.getString("done")+"\n");
                 } catch (Exception ex) {
+                    String message = MessageFormat.format(bundle.getString("run_trans.wrn"),new Object[] { sourcePath, transformName});
                     Logger.getLogger(XSLTProcessor.class.getName())
-                            .log(Level.WARNING, "Could not execute transform for "
-                                    + sourcePath + " using "
-                                    + transformName, ex);
-                    setStatusMessage(" could not complete!\n");
+                            .log(Level.WARNING, message, ex);
+                    setStatusMessage("\n"+message+"\n");
                 } finally {
                     updateTransformsDone();
                 }
             }
         }
-        setStatusMessage("Transformations completed.\n");
+        setStatusMessage(bundle.getString("done")+"\n");
     }
 
     private void updateTransformsDone(){        
