@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:da="http://dataaccessioner.org/schema/dda-0-3-1" xmlns:premis="info:lc/xmlns/premis-v2" version="1.0">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:da="http://dataaccessioner.org/schema/dda-0-3-1" xmlns:premis="info:lc/xmlns/premis-v2" xmlns:dcx="http://purl.org/dc/xml/" version="1.0">
   <xsl:output encoding="UTF-8" indent="yes" method="html" media-type="text/html" omit-xml-declaration="yes" doctype-system="about:legacy-compat"/>
   <xsl:template match="/">
     <html>
@@ -16,7 +16,11 @@
 	}
 	th {
   	text-transform: capitalize;
+    text-align: left;
 	}
+td {
+vertical-align: text-top;
+}
 	</style>
       </head>
       <body>
@@ -27,6 +31,7 @@
             <xsl:for-each select="da:collection/da:accession">
               <div class="accession">
                 <h2>Accession: <xsl:value-of select="@number"/></h2>
+                <xsl:apply-templates select="dcx:description"/>
                 <details open="true">
                   <summary>Disks/Folders &amp; Files</summary>
                   <xsl:apply-templates select="da:folder"/>
@@ -57,6 +62,7 @@
           </tr>
         </xsl:for-each>
       </table>
+<xsl:apply-templates select="dcx:description"/>
       <details open="true">
         <summary>Files &amp; Folders</summary>
         <xsl:apply-templates select="da:folder"/>
@@ -79,6 +85,7 @@
           </tr>
         </xsl:for-each>
       </table>
+      <xsl:apply-templates select="dcx:description"/>
       <xsl:apply-templates select="premis:object" />
     </div>
   </xsl:template>
@@ -117,6 +124,14 @@
 
   </table></xsl:if>
   </details>
-
+  </xsl:template>
+  
+  <xsl:template match="dcx:description">
+  <h3>Description</h3>
+  <table>
+  <xsl:for-each select="*">
+  <tr><th><xsl:value-of select="local-name()" /></th><td><xsl:value-of select="text()" /></td></tr>
+  </xsl:for-each>
+  </table>
   </xsl:template>
 </xsl:stylesheet>
