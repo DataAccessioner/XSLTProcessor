@@ -18,9 +18,12 @@
   	text-transform: capitalize;
     text-align: left;
 	}
-td {
-vertical-align: text-top;
-}
+  td {
+    vertical-align: text-top;
+  }
+  table {
+    margin-bottom: 1em;
+  }
 	</style>
       </head>
       <body>
