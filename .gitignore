@@ -38,3 +38,10 @@ Icon
 /nbproject/private/
 /build/
 /dist/
+
+# Vi
+.*.swp
+
+# IntelliJ
+.idea/
+*.iml
