@@ -45,3 +45,4 @@ Icon
 # IntelliJ
 .idea/
 *.iml
+out/
