@@ -38,9 +38,30 @@
                                 <h2>Accession:
                                     <xsl:value-of select="@number"/>
                                 </h2>
-                                <p><strong>Ingest note: </strong> <xsl:value-of select="da:ingest_note"/></p>
-                                <p><strong>Source note: </strong> <xsl:value-of select="da:source_note"/></p>
-                                <p><strong>Processing duration: </strong><xsl:value-of select="da:ingest_time"/></p>
+                                <table>
+                                    <xsl:if test="da:ingest_note">
+                                    <tr>
+                                        <th>Ingest Note</th>
+                                        <td><xsl:value-of select="da:ingest_note"/></td>
+                                    </tr>
+                                    </xsl:if>
+                                    <xsl:if test="da:source_note">
+                                    <tr>
+                                        <th>Source Note</th>
+                                        <td><xsl:value-of select="da:source_note"/></td>
+                                    </tr>
+                                    </xsl:if>
+                                    <xsl:if test="da:additional_notes">
+                                    <tr>
+                                        <th>Additional Notes</th>
+                                        <td><xsl:value-of select="da:additional_notes"/></td>
+                                    </tr>
+                                    </xsl:if>
+                                    <tr>
+                                        <th>Processing Duration</th>
+                                        <td><xsl:value-of select="da:ingest_time"/></td>
+                                    </tr>
+                                </table>
                                 <xsl:apply-templates select="dcx:description"/>
                                 <details open="true">
                                     <summary>Disks/Folders &amp; Files</summary>
