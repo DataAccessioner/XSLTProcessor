@@ -17,6 +17,6 @@
         </jar>
         <copy todir="${dist.dir}/xslt"><fileset dir="xslt" /></copy>
         <copy file="license.txt" todir="${dist.dir}" />
-        <copy file="README.txt" todir="${dist.dir}" />
+        <copy file="README.md" todir="${dist.dir}" />
     </target>
 </project>
