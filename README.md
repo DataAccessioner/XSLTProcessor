@@ -1,11 +1,12 @@
+**Notice:** *As of the beginning of 2023 the Data Accessioner project no longer has any active developers maintaining it.*
+
 XSLT Processor
 ==============
 
 Simple GUI tool for running a set of xslt over a set of source files.
 
 The default set of xslt are intended to transform the output of files from the 
-Data Accessioner <http://dataaccessioner.org> versions 3.1 (using the PREMIS 
-metadata manager), 1.0, and 1.1.
+Data Accessioner versions 3.1 (using the PREMIS metadata manager), 1.0, and 1.1.
 
 # Usage
 
